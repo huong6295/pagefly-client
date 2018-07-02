@@ -1,6 +1,6 @@
 import React, {Component, ComponentClass, ComponentElement, FormEvent, RefObject} from 'react';
 import {Container, Subscribe} from 'unstated-x';
-import {SelectedContainer} from 'containers';
+import {ElementContainer, SelectedContainer} from 'containers';
 import uuid from 'uuid';
 
 export interface PFElementInterface extends ComponentClass{
@@ -9,7 +9,8 @@ export interface PFElementInterface extends ComponentClass{
 type ElementProps = {
 	type: string,
 	data: object,
-	id?: string
+	id?: string,
+	container: ElementContainer
 }
 
 export const elementInstances = new Map()
@@ -19,8 +20,7 @@ window.elementInstances = elementInstances
 export const createPFElement = (settings: object) => (Element: PFElementInterface) => {
 
 	return class PFElement extends Component<ElementProps, any> {
-		stateContainer: any
-
+		stateContainer: ElementContainer = this.props.container
 		DOMNodeRef: RefObject<HTMLElement> = React.createRef()
 		elementRef: RefObject<Component> = React.createRef()
 		styledRefs: RefObject<Component> = React.createRef()
@@ -28,16 +28,10 @@ export const createPFElement = (settings: object) => (Element: PFElementInterfac
 		static type = Element.type
 		constructor(props: ElementProps, context: object) {
 			super(props, context)
-			const { data, ...rest } = props
-			const containerState = {
-				...Element.defaultProps,
-				...data
-			}
 
-			console.log(2222, containerState)
-			this.stateContainer = new Container(containerState)
-			elementInstances.set(this.id, this)
+			console.log(111, this.props)
 		}
+
 
 		componentDidUpdate(prevProps: ElementProps) {
 
@@ -65,6 +59,7 @@ export const createPFElement = (settings: object) => (Element: PFElementInterfac
 				selected: this,
 				selector: this.selector
 			})
+			window.selected = this
 		}
 
 		render() {
@@ -73,7 +68,8 @@ export const createPFElement = (settings: object) => (Element: PFElementInterfac
 				<Subscribe to={[this.stateContainer]}>
 					{(stateContainer) => {
 						return <Element
-							{...stateContainer.state}
+							{...stateContainer.state.data}
+							children={stateContainer.state.children}
 							onChange={(value: object) => {
 								console.log('onChange', value)
 								stateContainer.setState(value)

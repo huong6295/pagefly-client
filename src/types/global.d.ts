@@ -6,4 +6,6 @@ interface Window {
 	uuid: any;
 	elementInstances: any;
 	element: any;
+	ItemsContainer: any;
+	selected: any;
 }

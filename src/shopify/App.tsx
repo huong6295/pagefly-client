@@ -11,7 +11,7 @@ import React, {
 import IFrame from 'components/IFrame';
 import {Container, Provider, Subscribe} from 'unstated-x';
 import {findDOMNode} from 'react-dom';
-import {SelectedContainer} from 'containers';
+import {ElementContainer, Items, ItemsContainer, SelectedContainer} from 'containers';
 import {createPFElement} from 'helpers/createElement';
 import Inspector from 'inspectors';
 import uuid from 'uuid'
@@ -72,10 +72,14 @@ const ElementComponents: {
 	Button: {
 		type: 'Button',
 		load: () => import('elements/Button.tsx')
+	},
+	Section: {
+		type: 'Section',
+		load: () => import('elements/Section.tsx')
 	}
 }
 
-class ElementLoader extends React.Component<{type: string, data: object}> {
+class ElementLoader extends React.Component<{type: string, id: string, data?: object, container?: ElementContainer}> {
 
 	state = {
 		Instance: (): Component => null
@@ -95,8 +99,8 @@ class ElementLoader extends React.Component<{type: string, data: object}> {
 	loadElement = async () => {
 		const {type} = this.props
 		const Instance = (await ElementComponents[type].load()).default
-		console.log(Instance)
 		this.setState({Instance})
+		console.log('loaded', this.props)
 	}
 
 	render() {
@@ -105,25 +109,12 @@ class ElementLoader extends React.Component<{type: string, data: object}> {
 	}
 }
 
-
-class Element extends React.Component {
-
-	state: ElementState = {
-		items: []
-	}
-
-	componentDidMount() {
-		window.element = this
-	}
-
-	renderChildren = (items: ItemType[]) => {
-		return items.map((item: ItemType, key: number) => <ElementLoader key={item.id || key} type={item.type} data={item.data}/>)
-	}
-
-	render() {
-
-		return this.renderChildren(this.state.items)
-	}
+export const renderElement = function (id: string): ReactNode {
+	const container: ElementContainer = ItemsContainer.state[id]
+	const type = container.state.type
+	return <ElementLoader type={type} id={id} container={container} />
+	console.log(container, type)
+	return null
 }
 
 class App extends Component {
@@ -144,9 +135,15 @@ class App extends Component {
 						this.setState({frame})
 					}}>
 						<h3>This is demo Element</h3>
-						<Page>
-							<Element />
-						</Page>
+						<Subscribe to={[ItemsContainer]}>
+							{(items: Items) => {
+								if (!Object.keys(items.state).length) { return 'There is no items!' }
+								return <Page>
+									{renderElement(items.firstItemKey)}
+								</Page>
+							}}
+						</Subscribe>
+
 					</IFrame>
 
 					<h3>This is demo control inspector:</h3>
@@ -157,6 +154,5 @@ class App extends Component {
 		);
 	}
 }
-
 
 export default App;

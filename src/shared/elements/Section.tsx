@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 import React from 'react'
+import {renderElement} from 'App';
+import createPFElement from '../helpers/createElement';
+
 const S = styled.section`
 
 	border: cyan 1px dotted;
@@ -7,14 +10,18 @@ const S = styled.section`
 
 `
 
-export default class Section extends React.Component<any> {
+class Section extends React.Component<any> {
 	static type = 'Section'
 	render() {
-		return <S>
+		console.log('section props', this.props)
+		return <S {...this.props.extraProps}>
+
 			<div className="container">
-				{this.props.children}
+				{React.Children.map(this.props.children, renderElement)}
 			</div>
 		</S>
 	}
 
 }
+
+export default createPFElement({})(Section)
