@@ -1,9 +1,14 @@
 import {Container} from 'unstated-x';
 import uuid from 'uuid';
+import {PFElementInterface} from '../helpers/createElement';
 
-export const SelectedContainer = new Container({
-	selected: {container: Container}
-})
+class Selected extends Container<{}> {
+	state: {
+		selected?: PFElementInterface,
+		selector?: string
+	} = {}
+}
+export const SelectedContainer = new Selected()
 
 type StateStyle =  {
 	[selector: string]: string
@@ -33,9 +38,10 @@ export class StyleContainer extends Container<object> {
 }
 
 export type ElementContainerState = {
+	id?: string,
 	type: string
-	children: Array<string|number>
-	data: object
+	children?: Array<string|number>
+	data?: object
 }
 
 export class ElementContainer extends Container<ElementContainerState> {}
@@ -62,12 +68,12 @@ export class Items extends Container<ItemsState> {
 		return Object.keys(this.state)[0]
 	}
 
-	addItem = (options: {id?: ItemIdType, type: string, children: string[], data: {}}) => {
-		let {id, ...rest} = options
-		if (!id) {
-			id = uuid()
+	addItem = async (options: {id?: ItemIdType, type: string, children?: string[], data?: {}}): Promise<ElementContainer> => {
+		if (!options.id) {
+			options.id = uuid()
 		}
-		return this.setState({[id]: new ElementContainer(rest)})
+		await this.setState({[options.id]: new ElementContainer(options)})
+		return this.state[options.id]
 	}
 
 }

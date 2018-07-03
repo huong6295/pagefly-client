@@ -1,9 +1,10 @@
 import React from 'react';
 import {Container, Subscribe} from 'unstated-x';
-import {SelectedContainer, StyleContainer} from 'containers';
+import {ElementContainer, ItemsContainer, SelectedContainer, StyleContainer} from 'containers';
 import IFrame from 'components/IFrame';
 import styled from 'styled-components';
 import { SketchPicker } from 'react-color';
+import {ElementInterface, PFElementInterface} from '../helpers/createElement';
 
 function getStyleSheet(document: Document, device: string) {
 	const styleSheetList: StyleSheetList = document.styleSheets
@@ -40,7 +41,8 @@ export default class Inspector extends React.Component<{frame: IFrame}> {
 	}
 	state = {
 		style: '',
-		color: 'red'
+		color: 'red',
+		addElement: ''
 	}
 	componentDidMount() {
 
@@ -51,6 +53,7 @@ export default class Inspector extends React.Component<{frame: IFrame}> {
 		mobileStyle.instance = mobile
 
 		window.inspector = this
+
 	}
 
 	saveStyle = (selector: string) => {
@@ -60,6 +63,16 @@ export default class Inspector extends React.Component<{frame: IFrame}> {
 		} else {
 			console.error('Style must be valid JSON string')
 		}
+	}
+
+	addElement = async (selected: PFElementInterface) => {
+		const {addElement}: {addElement: string} = this.state
+		const newItem: ElementContainer = await ItemsContainer.addItem({type: addElement})
+		console.log(newItem, selected.stateContainer)
+		selected.stateContainer.setState({
+			children: [...(selected.stateContainer.state.children || []), newItem.state.id]
+		})
+
 	}
 
 	render() {
@@ -91,11 +104,12 @@ export default class Inspector extends React.Component<{frame: IFrame}> {
 						</div>
 							<div>
 								Computed style::
-								{/*<textarea value={selected.computedStyle.cssText} />*/}
+								<textarea value={selected.computedStyle.cssText} onChange={() => {}} />
 							</div>
-
 							<div>
-								<textarea></textarea>
+								Add Children::
+								<input value={this.state.addElement} onChange={e => this.setState({addElement: e.target.value})} />
+								<button onClick={() => this.addElement(selected)}>Add</button>
 							</div>
 
 						</div>}

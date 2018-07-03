@@ -18,6 +18,7 @@ import uuid from 'uuid'
 import Section from '../shared/elements/Section';
 import styled from 'styled-components';
 import Button from '../shared/elements/Button';
+import {renderElement} from '../shared/helpers/renderElement';
 
 window.uuid = uuid
 
@@ -59,63 +60,6 @@ type ElementState = {
 	items: ItemType[]
 }
 
-const ElementComponents: {
-	[type: string]: {
-		type: string
-		load: Function
-	}
-} = {
-	Paragraph: {
-		type: 'Paragraph',
-		load: () => import('elements/Paragraph.tsx')
-	},
-	Button: {
-		type: 'Button',
-		load: () => import('elements/Button.tsx')
-	},
-	Section: {
-		type: 'Section',
-		load: () => import('elements/Section.tsx')
-	}
-}
-
-class ElementLoader extends React.Component<{type: string, id: string, data?: object, container?: ElementContainer}> {
-
-	state = {
-		Instance: (): Component => null
-	}
-
-	componentDidMount() {
-		this.loadElement()
-	}
-
-	componentDidUpdate(prevProps: {type: string}) {
-		console.log('did update')
-		if (prevProps.type !== this.props.type) {
-			this.loadElement()
-		}
-	}
-
-	loadElement = async () => {
-		const {type} = this.props
-		const Instance = (await ElementComponents[type].load()).default
-		this.setState({Instance})
-		console.log('loaded', this.props)
-	}
-
-	render() {
-		const {Instance} = this.state
-		return <Instance {...this.props} />
-	}
-}
-
-export const renderElement = function (id: string): ReactNode {
-	const container: ElementContainer = ItemsContainer.state[id]
-	const type = container.state.type
-	return <ElementLoader type={type} id={id} container={container} />
-	console.log(container, type)
-	return null
-}
 
 class App extends Component {
 
@@ -131,6 +75,10 @@ class App extends Component {
 					<IFrame head={`
 						<style data-pagefly-css="all"></style>
 						<style data-pagefly-css="mobile"></style>
+						<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
 					`} onLoad={(frame: IFrame) => {
 						this.setState({frame})
 					}}>
@@ -146,7 +94,7 @@ class App extends Component {
 
 					</IFrame>
 
-					<h3>This is demo control inspector:</h3>
+					<h3>This is demo control inspector ...:</h3>
 					{frame && <Inspector frame={frame} />}
 
 				</div>

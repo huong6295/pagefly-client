@@ -1,10 +1,10 @@
-import React, {Component, ComponentClass, ComponentElement, FormEvent, RefObject} from 'react';
+import React, {Component, ComponentClass, ComponentElement, FormEvent, RefObject, SFC, StatelessComponent} from 'react';
 import {Container, Subscribe} from 'unstated-x';
 import {ElementContainer, SelectedContainer} from 'containers';
 import uuid from 'uuid';
 
-export interface PFElementInterface extends ComponentClass{
-	type: string
+export interface ElementInterface extends ComponentClass{
+	type?: string
 }
 type ElementProps = {
 	type: string,
@@ -13,14 +13,17 @@ type ElementProps = {
 	container: ElementContainer
 }
 
+export interface PFElementInterface extends Component {
+	stateContainer: ElementContainer;
+}
 export const elementInstances = new Map()
 
 window.elementInstances = elementInstances
 
-export const createPFElement = (settings: object) => (Element: PFElementInterface) => {
+export const createPFElement = (settings: object) => (Element: ElementInterface) => {
 
-	return class PFElement extends Component<ElementProps, any> {
-		stateContainer: ElementContainer = this.props.container
+	return class PFElement extends Component<ElementProps, any> implements PFElementInterface {
+		stateContainer = this.props.container
 		DOMNodeRef: RefObject<HTMLElement> = React.createRef()
 		elementRef: RefObject<Component> = React.createRef()
 		styledRefs: RefObject<Component> = React.createRef()
@@ -31,7 +34,6 @@ export const createPFElement = (settings: object) => (Element: PFElementInterfac
 
 			console.log(111, this.props)
 		}
-
 
 		componentDidUpdate(prevProps: ElementProps) {
 
@@ -54,12 +56,14 @@ export const createPFElement = (settings: object) => (Element: PFElementInterfac
 			return getComputedStyle(this.DOMNode)
 		}
 		handlePointerDown = (e: MouseEvent) => {
-			console.log('mouse down', this)
-			SelectedContainer.setState({
-				selected: this,
-				selector: this.selector
-			})
-			window.selected = this
+			if (SelectedContainer.state.selected !== this) {
+				console.log('mouse down', this)
+				SelectedContainer.setState({
+					selected: this,
+					selector: this.selector
+				})
+				window.selected = this
+			}
 		}
 
 		render() {

@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import React from 'react'
-import {renderElement} from 'App';
+
 import createPFElement from '../helpers/createElement';
+import {renderElement} from '../helpers/renderElement';
 
 const S = styled.section`
 
