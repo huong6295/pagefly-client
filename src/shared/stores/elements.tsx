@@ -1,22 +1,14 @@
+import Paragraph from 'elements/Paragraph'
+import Button from 'elements/Button'
+import Section from 'elements/Section'
+import Body from 'elements/Body'
+import {ComponentClass} from 'react';
 
-const ElementComponents: {
-	[type: string]: {
-		type: string
-		load: Function
-	}
+export const ElementComponents: {
+	[type: string]: ComponentClass
 } = {
-	Paragraph: {
-		type: 'Paragraph',
-		load: () => import('elements/Paragraph.tsx')
-	},
-	Button: {
-		type: 'Button',
-		load: () => import('elements/Button.tsx')
-	},
-	Section: {
-		type: 'Section',
-		load: () => import('elements/Section.tsx')
-	}
+	Paragraph,
+	Button,
+	Section,
+	Body
 }
-
-export default ElementComponents

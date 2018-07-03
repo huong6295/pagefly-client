@@ -8,7 +8,7 @@ class Button extends React.Component<{extraProps: object, minh: string}> {
 	render() {
 		return (
 			<B {...this.props.extraProps}>
-				This is a draggable button {this.props.minh}
+				This is a BUTTON {this.props.minh}
 			</B>
 		)
 	}

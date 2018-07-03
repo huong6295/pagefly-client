@@ -1,11 +1,12 @@
-import React, {Component, ComponentClass, ComponentElement, FormEvent, RefObject, SFC, StatelessComponent} from 'react';
-import {Container, Subscribe} from 'unstated-x';
+import React, {Component, ComponentClass, RefObject} from 'react';
+import {Subscribe} from 'unstated-x';
 import {ElementContainer, SelectedContainer} from 'containers';
 import uuid from 'uuid';
 
-export interface ElementInterface extends ComponentClass{
+export interface ElementInterface extends ComponentClass {
 	type?: string
 }
+
 type ElementProps = {
 	type: string,
 	data: object,
@@ -16,35 +17,42 @@ type ElementProps = {
 export interface PFElementInterface extends Component {
 	stateContainer: ElementContainer;
 }
+
 export const elementInstances = new Map()
 
 window.elementInstances = elementInstances
 
-export const createPFElement = (settings: object) => (Element: ElementInterface) => {
+export const createPFElement = (settings: object) => (Element: ElementInterface): ComponentClass => {
 
 	return class PFElement extends Component<ElementProps, any> implements PFElementInterface {
-		stateContainer = this.props.container
 		DOMNodeRef: RefObject<HTMLElement> = React.createRef()
 		elementRef: RefObject<Component> = React.createRef()
 		styledRefs: RefObject<Component> = React.createRef()
 		id: string = this.props.id || uuid()
 		static type = Element.type
+
 		constructor(props: ElementProps, context: object) {
 			super(props, context)
 
-			console.log(111, this.props)
+			this.state = {
+				container: props.container
+			}
+		}
+		get stateContainer() {
+			return this.state.container
 		}
 
 		componentDidUpdate(prevProps: ElementProps) {
-
-			if (prevProps.data !== this.props.data) {
-				this.stateContainer.setStateSync(this.props.data)
+			console.log('did update', prevProps)
+			if (prevProps.container !== this.props.container) {
+				this.setState({container: this.props.container})
 			}
 		}
 
 		get element() {
 			return this.elementRef.current
 		}
+
 		get DOMNode() {
 			return this.DOMNodeRef.current
 		}
@@ -52,12 +60,15 @@ export const createPFElement = (settings: object) => (Element: ElementInterface)
 		get selector() {
 			return Array.from(this.DOMNode.classList).map(s => `.${s}`).join('')
 		}
+
 		get computedStyle() {
 			return getComputedStyle(this.DOMNode)
 		}
+
 		handlePointerDown = (e: MouseEvent) => {
+			e.stopPropagation()
 			if (SelectedContainer.state.selected !== this) {
-				console.log('mouse down', this)
+				console.log('mouse down', Element.type)
 				SelectedContainer.setState({
 					selected: this,
 					selector: this.selector
@@ -68,11 +79,12 @@ export const createPFElement = (settings: object) => (Element: ElementInterface)
 
 		render() {
 			const className = 'pf-' + this.id.split('-')[0]
+			const {container} = this.state
 			return (
-				<Subscribe to={[this.stateContainer]}>
+				<Subscribe to={[container]}>
 					{(stateContainer) => {
 						return <Element
-							{...stateContainer.state.data}
+							{...stateContainer.state}
 							children={stateContainer.state.children}
 							onChange={(value: object) => {
 								console.log('onChange', value)
@@ -86,7 +98,7 @@ export const createPFElement = (settings: object) => (Element: ElementInterface)
 								draggable: true,
 								'data-element': this.id
 
-						}}
+							}}
 							ref={this.elementRef}
 						/>
 					}}

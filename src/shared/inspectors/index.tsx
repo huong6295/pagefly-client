@@ -1,10 +1,10 @@
 import React from 'react';
-import {Container, Subscribe} from 'unstated-x';
+import {Subscribe} from 'unstated-x';
 import {ElementContainer, ItemsContainer, SelectedContainer, StyleContainer} from 'containers';
 import IFrame from 'components/IFrame';
 import styled from 'styled-components';
-import { SketchPicker } from 'react-color';
-import {ElementInterface, PFElementInterface} from '../helpers/createElement';
+import {SketchPicker} from 'react-color';
+import {PFElementInterface} from '../helpers/createElement';
 
 function getStyleSheet(document: Document, device: string) {
 	const styleSheetList: StyleSheetList = document.styleSheets
@@ -28,22 +28,26 @@ export const mobileStyle = new StyleContainer()
 
 window.allStyle = allStyle
 
-export default class Inspector extends React.Component<{frame: IFrame}> {
+export default class Inspector extends React.Component<{ frame: IFrame }> {
 	styleSheets: {
 		all: CSSStyleSheet,
 		mobile: CSSStyleSheet
 	}
+
 	get frameWindow() {
 		return this.props.frame.window
 	}
+
 	get frameDocument() {
 		return this.props.frame.document
 	}
+
 	state = {
 		style: '',
 		color: 'red',
 		addElement: ''
 	}
+
 	componentDidMount() {
 
 		const all = getStyleSheet(this.frameDocument, 'all') as CSSStyleSheet
@@ -66,7 +70,7 @@ export default class Inspector extends React.Component<{frame: IFrame}> {
 	}
 
 	addElement = async (selected: PFElementInterface) => {
-		const {addElement}: {addElement: string} = this.state
+		const {addElement}: { addElement: string } = this.state
 		const newItem: ElementContainer = await ItemsContainer.addItem({type: addElement})
 		console.log(newItem, selected.stateContainer)
 		selected.stateContainer.setState({
@@ -77,23 +81,36 @@ export default class Inspector extends React.Component<{frame: IFrame}> {
 
 	render() {
 		return <Subscribe to={[SelectedContainer, allStyle]}>
-				{({state: {selected, selector}}) => {
-					if (!selected) { return null }
-					const {stateContainer} = selected
+			{({state: {selected, selector}}) => {
+				if (!selected) {
+					return null
+				}
+				const {stateContainer} = selected
 
-					allStyle.getStyle(selector)
-					return stateContainer && <Subscribe to={[stateContainer]}>
-						{(stateCon) => <div>
-								<Input onChange={(value: string) => stateCon.setStateSync({value})} value={stateCon.state.value} />
+				allStyle.getStyle(selector)
+				return stateContainer && <Subscribe to={[stateContainer]}>
+					{(stateCon) => <div>
+						<div>
+							Current state:
+							<textarea value={JSON.stringify(stateCon.state)} onChange={() => {}}></textarea>
+						</div>
 
 						<div>
-							Style: <TextArea value={this.state.style} onChange={e => this.setState({style: e.target.value})} />
+							Add Children::
+							<input value={this.state.addElement}
+								   onChange={e => this.setState({addElement: e.target.value})}/>
+							<button onClick={() => this.addElement(selected)}>Add</button>
+						</div>
+						<div>
+							Style: <TextArea value={this.state.style}
+											 onChange={e => this.setState({style: e.target.value})}/>
 
 							<button onClick={() => this.saveStyle(selector)}>Save Style</button>
-						</div><div>
+						</div>
+						<div>
 							<SketchPicker
-								color={ (allStyle.getStyle(selector) as {backgroundColor: string}).backgroundColor }
-								onChange={ (color: {
+								color={(allStyle.getStyle(selector) as { backgroundColor: string }).backgroundColor}
+								onChange={(color: {
 									hex: string
 								}) => {
 									console.log(color.hex)
@@ -102,28 +119,24 @@ export default class Inspector extends React.Component<{frame: IFrame}> {
 								}}
 							/>
 						</div>
-							<div>
-								Computed style::
-								<textarea value={selected.computedStyle.cssText} onChange={() => {}} />
-							</div>
-							<div>
-								Add Children::
-								<input value={this.state.addElement} onChange={e => this.setState({addElement: e.target.value})} />
-								<button onClick={() => this.addElement(selected)}>Add</button>
-							</div>
+						<div>
+							Computed style::
+							<textarea value={selected.computedStyle.cssText} onChange={() => {
+							}}/>
+						</div>
 
-						</div>}
-					</Subscribe>
-				}}
-			</Subscribe>
+					</div>}
+				</Subscribe>
+			}}
+		</Subscribe>
 
 	}
 }
 
-const Input: React.SFC<{value: string, onChange: Function}> = ({value, onChange}) => {
-
-	return <input value={value} onChange={e => onChange(e.target.value)}/>
-}
+// const Input: React.SFC<{ value: string, onChange: Function }> = ({value, onChange}) => {
+//
+// 	return <input value={value} onChange={e => onChange(e.target.value)}/>
+// }
 
 const TextArea = styled.textarea`
 

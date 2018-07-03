@@ -6,20 +6,20 @@ import {renderElement} from '../helpers/renderElement';
 
 const S = styled.section`
 
-	border: cyan 1px dotted;
-	min-height: 20px;
+	border: red 1px dashed;
+	min-height: 50px;
+	margin: 20px;
 
 `
 
-class Section extends React.Component<any> {
+class Section extends React.Component<{extraProps: object}> {
 	static type = 'Section'
 	render() {
 		console.log('section props', this.props)
 		return <S {...this.props.extraProps}>
 
-			<div className="container">
-				{React.Children.map(this.props.children, renderElement)}
-			</div>
+			{React.Children.map(this.props.children, renderElement)}
+
 		</S>
 	}
 

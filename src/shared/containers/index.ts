@@ -52,7 +52,11 @@ export type ItemsState = {
 }
 
 const defaultItem = {
-	[uuid()]: new ElementContainer({type: 'Section'})
+	'0-body': new ElementContainer({type: 'Body', children: ['1-section','2-section','3-section']}),
+	'1-section': new ElementContainer({type: 'Section', children: ['4-button']}),
+	'2-section': new ElementContainer({type: 'Section'}),
+	'3-section': new ElementContainer({type: 'Section'}),
+	'4-button': new ElementContainer({type: 'Button'})
 }
 export class Items extends Container<ItemsState> {
 	state: ItemsState = defaultItem

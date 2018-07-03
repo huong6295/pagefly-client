@@ -1,5 +1,5 @@
 import {StyleSheetManager} from 'styled-components'
-import React, {Fragment} from 'react'
+import React from 'react'
 import {createPortal} from 'react-dom'
 
 type IFrameState = {
@@ -53,6 +53,7 @@ export default class IFrame extends React.Component<{head?: string, style?: obje
             style={{
                 border: 0,
                 width: '100%',
+                minHeight: 500,
                 ...this.props.style
             }}
         >
