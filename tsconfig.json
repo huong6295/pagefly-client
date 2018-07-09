@@ -13,7 +13,6 @@
     "noImplicitAny": true,
     "skipDefaultLibCheck": true,
     "sourceMap": true,
-    "noUnusedLocals": true,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "removeComments": true,

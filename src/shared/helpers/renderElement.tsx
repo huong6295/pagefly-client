@@ -6,7 +6,6 @@ export const renderElement = (id: string): ReactNode => {
 	const container: ElementContainer = ItemsContainer.state[id]
 	const type = container.state.type
 	const Element = ElementComponents[type]
-	console.log('renderElement', id, container)
 	return <Element {...{
 		key: id,
 		id,

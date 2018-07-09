@@ -43,8 +43,8 @@ export const createPFElement = (settings: object) => (Element: ElementInterface)
 		}
 
 		componentDidUpdate(prevProps: ElementProps) {
-			console.log('did update', prevProps)
 			if (prevProps.container !== this.props.container) {
+				console.log('did update', prevProps)
 				this.setState({container: this.props.container})
 			}
 		}

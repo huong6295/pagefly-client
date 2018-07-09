@@ -15,7 +15,6 @@ const S = styled.section`
 class Section extends React.Component<{extraProps: object}> {
 	static type = 'Section'
 	render() {
-		console.log('section props', this.props)
 		return <S {...this.props.extraProps}>
 
 			{React.Children.map(this.props.children, renderElement)}

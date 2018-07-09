@@ -43,7 +43,7 @@ export default class IFrame extends React.Component<{head?: string, style?: obje
     render() {
         return <iframe
             ref={this.frame}
-            name="React Portal Frame"
+            name="PageFly Editor Frame"
             srcDoc={`<!DOCTYPE html><html>
                         <head>
                             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>

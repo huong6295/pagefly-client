@@ -14,7 +14,6 @@ class Body extends React.Component<{ extraProps: object }> {
 	static type = 'Body'
 
 	render() {
-		console.log('body props', this.props)
 		return <Div {...this.props.extraProps}>
 			{React.Children.map(this.props.children, renderElement)}
 		</Div>
