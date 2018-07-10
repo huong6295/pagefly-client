@@ -1,17 +1,21 @@
 import React from 'react'
-import {createPFElement} from '../helpers/createElement';
-import styled from 'styled-components';
-const B = styled.button``
-class Button extends React.Component<{extraProps: object, minh: string}> {
+import styled from 'styled-components'
+import {createElement} from '../HOCs/createElement'
 
+const ButtonStyle = styled.button`
+		border: 1px solid orange;
+		border-radius: 10px;
+`
+
+class Button extends React.Component<{ extraProps: object }> {
 	static type = 'Button'
 	render() {
 		return (
-			<B {...this.props.extraProps}>
-				This is a BUTTON {this.props.minh}
-			</B>
+			<ButtonStyle {...this.props.extraProps}>
+				BUTTON
+			</ButtonStyle>
 		)
 	}
 }
-
-export default createPFElement({})(Button)
+// @ts-ignore
+export default createElement({})(Button)

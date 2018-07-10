@@ -1,11 +1,9 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
 import React from 'react'
-import createPFElement from '../helpers/createElement';
-import {renderElement} from '../helpers/renderElement';
+import {createElement} from '../HOCs/createElement'
 
-const Div = styled.div`
-
-	border: red 1px dashed;
+const BodyStyle = styled.div`
+	border: black 2px dashed;
 	min-height: 100px;
 
 `
@@ -14,11 +12,11 @@ class Body extends React.Component<{ extraProps: object }> {
 	static type = 'Body'
 
 	render() {
-		return <Div {...this.props.extraProps}>
-			{React.Children.map(this.props.children, renderElement)}
-		</Div>
+		return <BodyStyle {...this.props.extraProps}>
+			{this.props.children}
+		</BodyStyle>
 	}
-
 }
 
-export default createPFElement({})(Body)
+// @ts-ignore
+export default createElement({})(Body)
